@@ -1,27 +1,24 @@
 #include <iostream>
 #include "shapefil.h"
+#include <iomanip>
+#include <exception>
+#include <string>
+#include <GeographicLib/UTMUPS.hpp>
+
+using namespace std;
+using namespace GeographicLib;
 
 int main()
 {
-	double *x_coords;
-	x_coords = new double[10];
-	double *y_coords;
-	y_coords = new double[10];
-
-	int* nr_of_ent;
-	nr_of_ent = new int;
-
-	int* shapetype;
-	shapetype = new int;
-
-	double* pad_of_min_bound;
-	pad_of_min_bound = new double;
-
-	double *pad_of_max_bound;
-	pad_of_max_bound = new double;
-
+	double x_coords[10];
+	double y_coords[10];
+	int nr_of_ent;
+	int shapetype;
+	double pad_of_min_bound;
+	double pad_of_max_bound;
+	
 	SHPHandle a = SHPOpen("harvest\\harvest", "rb");
-	SHPGetInfo(a, nr_of_ent, shapetype, pad_of_min_bound, pad_of_max_bound);
+	SHPGetInfo(a, &nr_of_ent, NULL, NULL, NULL);
 
 	SHPObject* ob = SHPReadObject(a, 2);
 
@@ -29,11 +26,24 @@ int main()
 
 	for(int i = 0; i < n_vertices; i++)
 	{
-	   //*(x_coords[i]+1) = *((ob->padfX)+1);
 		x_coords[i] = *((ob->padfX) + i);
 		y_coords[i] = *((ob->padfY) + i);
 	}
-	
 
-	std::cout << "working";
+	//cout << "----- LL2UTM and UTM2LL ------- " << endl;
+	//// Sample forward calculation
+	double lat = 33.3, lon = 44.4; // Baghdad
+	int zone;
+	bool northp;
+	double x_utm = 0;
+	double y_utm = 0;
+	UTMUPS::Forward(lat, lon, zone, northp, x_utm, y_utm);
+	string zonestr = UTMUPS::EncodeZone(zone, northp);
+	cout << fixed << setprecision(2) << x_utm <<" "<< y_utm <<endl;
+	
+	//close the shapefile
+	SHPClose(a);
+	SHPDestroyObject(ob);
+
+	cout << "--- END ---";
 }

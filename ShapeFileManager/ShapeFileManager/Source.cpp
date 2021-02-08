@@ -18,7 +18,7 @@ int main()
 	double pad_of_max_bound;
 	
 	SHPHandle a = SHPOpen("harvest\\harvest", "rb");
-	SHPGetInfo(a, &nr_of_ent, NULL, NULL, NULL);
+	SHPGetInfo(a, &nr_of_ent, &shapetype, NULL, NULL);
 
 	SHPObject* ob = SHPReadObject(a, 2);
 
@@ -30,8 +30,8 @@ int main()
 		y_coords[i] = *((ob->padfY) + i);
 	}
 
-	//cout << "----- LL2UTM and UTM2LL ------- " << endl;
-	//// Sample forward calculation
+	cout << "----- LL2UTM and UTM2LL ------- " << endl;
+	// Sample forward calculation
 	double lat = 33.3, lon = 44.4; // Baghdad
 	int zone;
 	bool northp;
@@ -41,7 +41,7 @@ int main()
 	string zonestr = UTMUPS::EncodeZone(zone, northp);
 	cout << fixed << setprecision(2) << x_utm <<" "<< y_utm <<endl;
 	
-	//close the shapefile
+	//close the shapefile & Destroy the SHP object
 	SHPClose(a);
 	SHPDestroyObject(ob);
 
